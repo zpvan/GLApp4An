@@ -20,7 +20,7 @@ public class TriangleRenderer implements GLSurfaceView.Renderer {
     private static final String TAG = "TriangleRenderer";
 
     private static final String A_POSITION = "a_Position";
-    private static final String U_COLOR = "u_Color";
+    private static final String U_COLOR    = "u_Color";
 
     private Context mCtx;
 

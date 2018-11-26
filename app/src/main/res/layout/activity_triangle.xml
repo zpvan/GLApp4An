@@ -4,16 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/root_fl"
+    android:id="@+id/rt_fl_tri"
     tools:context=".activity.TriangleActivity">
-
-    <!--<android.opengl.GLSurfaceView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
-
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="TriangleActivity"/>-->
 
 </FrameLayout>

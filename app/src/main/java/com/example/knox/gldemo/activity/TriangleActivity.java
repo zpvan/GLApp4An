@@ -15,15 +15,15 @@ public class TriangleActivity extends AppCompatActivity {
 
     private static final String TAG = "TriangleActivity";
 
-    private boolean rendererSet;
+    private boolean       rendererSet;
     private GLSurfaceView mGlSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_circle);
+        setContentView(R.layout.activity_triangle);
 
-        FrameLayout rootFl = findViewById(R.id.root_fl);
+        FrameLayout rootFl = findViewById(R.id.rt_fl_tri);
 
         if (EsUtil.supportEs2(this)) {
             mGlSurfaceView = new GLSurfaceView(this);
@@ -42,12 +42,14 @@ public class TriangleActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (rendererSet) mGlSurfaceView.onPause();
+        if (rendererSet)
+            mGlSurfaceView.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (rendererSet) mGlSurfaceView.onResume();
+        if (rendererSet)
+            mGlSurfaceView.onResume();
     }
 }
