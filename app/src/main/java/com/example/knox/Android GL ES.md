@@ -146,3 +146,106 @@ We get one red triangle as the below image.
 
 
 
+
+
+### Project 2
+
+#### Description: draw one red circle
+
+After project1, we wrap GLES20 function.
+
+In project2, we only need to pass in the 2 shaders to get program.
+
+```java
+mSimpleProgram = EsUtil.shaderCode2Program(
+                ResUtil.readResource2String(mCtx, R.raw.circle_vertex_shader),
+                ResUtil.readResource2String(mCtx, R.raw.simple_fragment_shader));
+```
+
+There, create shader, compile shader, create program, attach shader, link program.
+
+Show vertex shader.
+
+```glsl
+uniform mat4 u_Matrix;
+attribute vec4 a_Position;
+
+void main()
+{
+    gl_Position = u_Matrix * a_Position;
+}
+```
+
+Show fragment shader.
+
+```glsl
+precision mediump float;
+
+uniform vec4 u_Color;
+
+void main()
+{
+    gl_FragColor = u_Color;
+}
+```
+
+Obviously, only add one more u_Matrix in vertex shader, other are same with project 1.
+
+Why we need this matrix, in order to adjust to the aspect radio.
+
+Let's see relative code.
+
+Get the uniform mat4 position.
+
+```java
+m_uMatix = GLES20.glGetUniformLocation(mSimpleProgram, U_MATRIX);
+```
+
+Generate othographic projection.
+
+```java
+final float aspectRadio = width > height ? ((float) width / (float) height) : ((float) height / (float) width);
+if (width > height) {
+    Matrix.orthoM(mProjectionMatrix, 0, -aspectRadio, aspectRadio, -1f, 1f, -1f, 1f);
+} else {
+    Matrix.orthoM(mProjectionMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
+}
+```
+
+Apply the matrix.
+
+```java
+GLES20.glUniformMatrix4fv(m_uMatix, 1, false, mProjectionMatrix, 0);
+```
+
+Why is that? About Linear Algebra
+
+<span style="color:red">// TODO</span>
+
+And then, we generate the circle datas.
+
+```java
+private float[] generate2DCircleFloatArray(GraphicsUtil.Point center, float radius, int 		number) {
+	float[] arrayOfCircumference = new float[(number + 1) * 2];
+	double pieceOfangle = 2 * Math.PI / number;
+	for (int i = 0; i <= number; i++) {
+		arrayOfCircumference[i * 2] = (float) (center.x + radius * Math.cos(pieceOfangle * 		       i));
+		arrayOfCircumference[i * 2 + 1] = (float) (center.y + radius * 								Math.sin(pieceOfangle * i));
+	}
+	float[] arrayOfCenter = new float[]{center.x, center.y};
+	float[] arrayOf2DCircle = new float[arrayOfCenter.length + 									arrayOfCircumference.length];
+	System.arraycopy(arrayOfCenter, 0, arrayOf2DCircle, 0, arrayOfCenter.length);
+	System.arraycopy(arrayOfCircumference, 0, arrayOf2DCircle, arrayOfCenter.length, 			arrayOfCircumference.length);
+	return arrayOf2DCircle;
+}
+```
+
+Final, we draw the circle use GLES20.GL_TRIANGLE_FAN.
+
+```java
+GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, circleVertices.length / 						POSITION_COMPONENT_COUNT);
+```
+
+We get one red circle as the below image.
+
+<img src="./img/red_circle.png" style="zoom:30%" />
