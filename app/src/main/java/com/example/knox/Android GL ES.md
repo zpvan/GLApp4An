@@ -249,3 +249,94 @@ GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, circleVertices.length / 						POS
 We get one red circle as the below image.
 
 <img src="./img/red_circle.png" style="zoom:30%" />
+
+
+
+
+
+### Project 3
+
+#### Description: draw one colorful rectangle
+
+Color effect is due to the use of varying in shader.
+
+Like rectangle_vertex_shader.glsl
+
+```glsl
+uniform mat4 u_Matrix;
+attribute vec4 a_Position;
+attribute vec4 a_Color;
+
+varying vec4 v_Color;
+
+void main()
+{
+    v_Color = a_Color;
+    gl_Position = u_Matrix * a_Position;
+}
+```
+
+Like rectangle_fragment_shader.glsl
+
+```glsl
+precision mediump float;
+
+varying vec4 v_Color;
+
+void main()
+{
+    gl_FragColor = v_Color;
+}
+```
+
+OpenGL will pass v_Color from vertex_shader to fragment_shader internally.
+
+We set each vertex one sure color.
+
+```java
+private float[] rectangleVertices = new float[]{
+	// x, y, r, g, b
+	-0.8f, 0.8f, 1f, 0f, 0f,
+	0.8f, 0.8f, 0f, 1f, 0f,
+	0f, 0f, 0f, 0f, 1f,
+	0.8f, -0.8f, 1f, 0f, 0f,
+	-0.8f, -0.8f, 1f, 1f, 1f,
+	-0.8f, 0.8f, 1f, 0f, 0f,
+};
+```
+
+point(-0.8f, 0.8f) would be set color(1f, 0f, 0f), that is to say it is red.
+
+OK, we need to put data into attributes and enable them.
+
+```java
+vertexFloatBuffer = NatBufUtil.allocateFloatBuffer(rectangleVertices);
+
+GLES20.glVertexAttribPointer(m_aPosition, POSITION_COMPONENT_COUNT, GLES20.GL_FLOAT,
+	false,
+	(POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_OF_FLOAT,
+	vertexFloatBuffer);
+
+GLES20.glEnableVertexAttribArray(m_aPosition);
+
+vertexFloatBuffer.position(POSITION_COMPONENT_COUNT);
+
+GLES20.glVertexAttribPointer(m_aColor, COLOR_COMPONENT_COUNT, GLES20.GL_FLOAT,
+	false,
+	(POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_OF_FLOAT,
+	vertexFloatBuffer);
+
+GLES20.glEnableVertexAttribArray(m_aColor);
+```
+
+Finally, we draw rectangle with GLES20.GL_TRIANGLE_STRIP
+
+```java
+GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0,
+	rectangleVertices.length / (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT));
+```
+
+We get one colorful rectangle as the below image.
+
+<img src="./img/colorful_rectangle.png" style="zoom:30%" />
+
