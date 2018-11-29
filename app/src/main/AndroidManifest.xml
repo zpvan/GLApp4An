@@ -10,16 +10,40 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-         <!--<activity android:name=".MainActivity">
+        <!--
+         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-         </activity>-->
+         </activity>
+        -->
 
-        <!--<activity android:name=".activity.TriangleActivity">
+
+        <!--
+        <activity android:name=".activity.TriangleActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+
+
+        <!--
+        <activity android:name=".activity.CircleActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+
+        <!--<activity android:name=".activity.ColorfulRectangleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,15 +51,7 @@
             </intent-filter>
         </activity>-->
 
-        <!--<activity android:name=".activity.CircleActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>-->
-
-        <activity android:name=".activity.ColorfulRectangleActivity">
+        <activity android:name=".activity.TouchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
