@@ -220,7 +220,63 @@ GLES20.glUniformMatrix4fv(m_uMatix, 1, false, mProjectionMatrix, 0);
 
 Why is that? About Linear Algebra
 
-<span style="color:red">// TODO</span>
+由于我们的手机屏幕实际不是正方形,而是矩阵,同时还存在横屏和竖屏两个情况.
+
+由于我们在vertex_shader最后写入到gl_Position的点,其实都是在normalized_coordinate坐标系里边的点. 现在由于设备的屏幕形状影响了我们真正输出图形形状. 也就是在normalized_coordinate里边画一个正方形, 屏幕展示出来却是一个长方形.如果画的是一个与normalized_coordinate四条边相切的圆, (-1,1) (1,1) (1,-1) (-1,-1)四个点围起来的四条边,那么真正从屏幕中看到的就会是,与屏幕四条边相切的一个椭圆.显然,并不是我们想要的结果,结果都发生了变形.
+
+那么,我们则想要找到这么一个坐标系,可以画一个圆,出来的就是一个圆,画一个正方形,我们看到的就是一个正方形.我们管这个坐标系叫做virtualized_coordinate.
+
+也就是找到一个矩阵u_matrix, 可以做到u_matrix * virtualized_coordinate = normalized_coordinate.
+
+这个变换矩阵就是orthographic projection matrix
+$$
+\begin{vmatrix}
+2/(right-left) & 0 & 0 & (right + left) / (right - left) \\
+0 & 2/(top - bottom) & 0 & (top + bottom) / (top - bottom) \\
+0 & 0 & -2 / (far - near) & -(far + near) / (far - near) \\
+0 & 0 & 0 & 1
+\end{vmatrix}
+$$
+举例看看效果
+
+假设我们现在是横屏,1920x1080
+$$
+aspectRadio = 1920 / 1080 \approx 1.78
+$$
+我们在virtualized_coordinated里边的点(aspectRadio, 1)变换到normalized_coordinate理应是点(1, 1)
+
+代入right = aspectRadio, left = -aspectRadio, top = 1, bottom = -1, far = 1, near = -1.
+$$
+\begin{vmatrix}
+1/aspectRadio & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & -1 & 0 \\
+0 & 0 & 0 & 1
+\end{vmatrix}
+\times
+\begin{vmatrix}
+aspectRadio \\
+1 \\
+0 \\
+1
+\end{vmatrix}
+=
+\begin{vmatrix}
+1 \\
+1 \\
+0 \\
+1
+\end{vmatrix}
+$$
+所以我们在virtualized_coordinated画一个正方形(-1,1) (1,1) (1, -1) (-1, -1)就会在normalized_coordinate中转换成四个点(-0.56, 1) (0.56, 1) (0.56, -1), (-0.56, -1),展现给我们的就是一个正方形. 通过这么一个orthographic projection matrix, 使得我们的图再也不会变形, 圆还是圆, 正方形还是正方形.
+
+<p><a href="https://blog.csdn.net/zzmkljd/article/details/52871561">关于orthographic projection matrix的推导1</a>
+
+<p><a href="https://www.cnblogs.com/davelink/p/5623760.html">关于orthographic projection matrix的推导2</a>
+
+<span style="color:red">// 自己做一个推导过程</span>
+
+
 
 And then, we generate the circle datas.
 
