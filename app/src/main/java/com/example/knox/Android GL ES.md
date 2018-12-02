@@ -396,3 +396,94 @@ We get one colorful rectangle as the below image.
 
 <img src="./img/colorful_rectangle.png" style="zoom:30%" />
 
+
+
+
+
+### Project 4
+
+#### Description: draw one equilateral triangle which can be translated
+
+We skip the TrsTriActivity directly, see TrsTriangleRenderer.
+
+Let's look at translate_vertex_shader.glsl, is same as circle_vertex_shader.glsl
+
+```glsl
+uniform mat4 u_Matrix;
+attribute vec4 a_Position;
+
+void main()
+{
+    gl_Position = u_Matrix * a_Position;
+}
+```
+
+Define equilateral triangle
+
+```java
+float[] triangleVertices = {
+	0, 0,
+	0, 0.7f,
+	0.7f, 0,
+};
+
+m_aPosition = GLES20.glGetAttribLocation(mSimpleProgram, A_POSITION);
+vertexFloatBuffer = NatBufUtil.allocateFloatBuffer(triangleVertices);
+
+EsUtil.vertexAttribPointerAndEnable(m_aPosition, POSITION_COMPONENT_COUNT, 				GLES20.GL_FLOAT, false, 0, vertexFloatBuffer);
+
+GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+```
+
+We already prepare a_Position attribute.
+
+Next, set our u_Matrix uniform.
+
+```java
+private final float[] mProjectionMatrix = new float[16];
+private final float   mTranslateX       = 0.3f;
+private final float   mTranslateY       = 0;
+private final float[] mIdentityMatrix   = new float[]{
+	1f, 0, 0, 0,
+	0, 1f, 0, 0,
+	0, 0, 1f, 0,
+	0, 0, 0, 1f,
+};
+private final float[] mFinalMatrix      = new float[16];
+float[] triangleVertices = {
+	0, 0,
+	0, 0.7f,
+	0.7f, 0,
+};
+
+@Override
+public void onSurfaceChanged(GL10 gl, int width, int height) {
+	GLES20.glViewport(0, 0, width, height);
+	final float aspectRadio = width > height ? ((float) width / (float) height) : 			((float) height / (float) width);
+	if (width > height) {
+		Matrix.orthoM(mProjectionMatrix, 0, -aspectRadio, aspectRadio, -1f, 1f, -1f, 			1f);
+	} else {
+		Matrix.orthoM(mProjectionMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 			1f);
+	}
+	Matrix.translateM(mIdentityMatrix, 0, mTranslateX, mTranslateY, 0);
+	Matrix.multiplyMM(mFinalMatrix, 0, mIdentityMatrix, 0, mProjectionMatrix, 0);
+	GLES20.glUniformMatrix4fv(m_uMatrix, 1, false, mFinalMatrix, 0);
+}
+```
+
+Because of translating 0.3f on x-axis, the equilateral triangle should be align the right side of screen.
+
+We can compare it with project 1.
+
+We get one align screen right side equilateral triangle as the below image.
+
+<img src="./img/translate_equilateral_triangle.png" style="zoom:30%" />
+
+If we change mTranslateX from 0.3f to -1f.
+
+We get one align screen left side equilateral triangle as the below image.
+
+<img src="./img/translate_equilateral_triangle2.png" style="zoom:30%" />
+
+
+
