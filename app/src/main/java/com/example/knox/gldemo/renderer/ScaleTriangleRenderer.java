@@ -19,7 +19,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class ScaleTriangleRenderer implements GLSurfaceView.Renderer {
 
-    private static final String TAG = "TrsTriangleRenderer";
+    private static final String TAG = "ScaleTriangleRenderer";
 
     private static final String U_MATRIX   = "u_Matrix";
     private static final String A_POSITION = "a_Position";
