@@ -54,7 +54,18 @@
         </activity>
         -->
 
-        <!--<activity android:name=".activity.TouchActivity">
+
+        <!--
+        <activity android:name=".activity.TouchActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+
+        <!--<activity android:name=".activity.TrsTriActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -62,7 +73,7 @@
             </intent-filter>
         </activity>-->
 
-        <activity android:name=".activity.TrsTriActivity">
+        <activity android:name=".activity.ScaleTriActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

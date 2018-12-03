@@ -487,3 +487,26 @@ We get one align screen left side equilateral triangle as the below image.
 
 
 
+### Project 5
+
+#### Description: draw one equilateral triangle which can be scaled
+
+Compare with project 4, only modify one place.
+
+```java
+private final float mScaleX = 1.3f;
+private final float mScaleY = 1.6f;
+
+Matrix.scaleM(mIdentityMatrix, 0, mScaleX, mScaleY, 1f);
+```
+
+We get a scaled triangle as the below image.
+
+<img src="./img/scaled_triangle.png" style="zoom:30%" />
+
+
+
+
+
+
+
