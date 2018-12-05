@@ -506,7 +506,21 @@ We get a scaled triangle as the below image.
 
 
 
+### Project 6
 
+#### Description: draw one equilateral triangle which can be rotated
 
+Compare with project 4, only modify one place.
 
+We want the graphic rotated around z-axis, 180°
+
+```java
+private final float mAngle = 180f;
+
+Matrix.rotateM(mIdentityMatrix, 0, mAngle, 0f, 0f, -1f);
+```
+
+We get a rotated triangle as the below image.
+
+<img src="./img/rotated_triangle.png" style="zoom:30%" />
 
