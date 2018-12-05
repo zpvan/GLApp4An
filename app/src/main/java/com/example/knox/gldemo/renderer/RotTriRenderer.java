@@ -29,7 +29,7 @@ public class RotTriRenderer implements GLSurfaceView.Renderer {
 
     private static final int     POSITION_COMPONENT_COUNT = 2;
     private final        float[] mProjectionMatrix        = new float[16];
-    private final        float   angle                    = 180f;
+    private final        float   mAngle                   = 90f;
     private final        float[] mIdentityMatrix          = new float[]{
             1f, 0, 0, 0,
             0, 1f, 0, 0,
@@ -90,9 +90,9 @@ public class RotTriRenderer implements GLSurfaceView.Renderer {
         }
         Log.e(TAG, "onSurfaceChanged: [width, height]=[" + width + ", " + height + "]");
         Log.e(TAG, "onSurfaceChanged: mProjectionMatrix=[" + MatrixUtil.print(mProjectionMatrix) + "]");
-        Matrix.rotateM(mIdentityMatrix, 0, angle, 0f, 0f, -1f);
+        Matrix.rotateM(mIdentityMatrix, 0, mAngle, 0f, 0f, -1f);
         Log.e(TAG, "onSurfaceChanged: mIdentityMatrix=[" + MatrixUtil.print(mIdentityMatrix) + "]");
-        Matrix.multiplyMM(mFinalMatrix, 0, mIdentityMatrix, 0, mProjectionMatrix, 0);
+        Matrix.multiplyMM(mFinalMatrix, 0, mProjectionMatrix, 0, mIdentityMatrix, 0);
         Log.e(TAG, "onSurfaceChanged: mFinalMatrix=[" + MatrixUtil.print(mFinalMatrix) + "]");
         GLES20.glUniformMatrix4fv(m_uMatrix, 1, false, mFinalMatrix, 0);
     }

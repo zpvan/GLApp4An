@@ -93,7 +93,7 @@ public class TrsTriangleRenderer implements GLSurfaceView.Renderer {
         Log.e(TAG, "onSurfaceChanged: mProjectionMatrix=[" + MatrixUtil.print(mProjectionMatrix) + "]");
         Matrix.translateM(mIdentityMatrix, 0, mTranslateX, mTranslateY, 0);
         Log.e(TAG, "onSurfaceChanged: mIdentityMatrix=[" + MatrixUtil.print(mIdentityMatrix) + "]");
-        Matrix.multiplyMM(mFinalMatrix, 0, mIdentityMatrix, 0, mProjectionMatrix, 0);
+        Matrix.multiplyMM(mFinalMatrix, 0, mProjectionMatrix, 0, mIdentityMatrix, 0);
         Log.e(TAG, "onSurfaceChanged: mFinalMatrix=[" + MatrixUtil.print(mFinalMatrix) + "]");
         GLES20.glUniformMatrix4fv(m_uMatrix, 1, false, mFinalMatrix, 0);
     }
