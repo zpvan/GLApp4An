@@ -20,7 +20,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class TexRectangleRenderer implements GLSurfaceView.Renderer {
-    private static final String TAG = "ColorfulRectangleRender";
+    private static final String TAG = "TexRectangleRenderer";
 
     private static final String A_POSITION           = "a_Position";
     private static final String A_TEXTURECOORDINATES = "a_TextureCoordinates";
