@@ -524,3 +524,123 @@ We get a rotated triangle as the below image.
 
 <img src="./img/rotated_triangle.png" style="zoom:30%" />
 
+
+
+### Project 7
+
+#### Description: draw a texture rectangle
+
+We need to overwrite our shader from rectangle_fragment_shader.glsl and rectangle_vertex_shader.glsl
+
+See our tex_rectangle_vertex_shader.glsl
+
+```glsl
+uniform mat4 u_Matrix;
+attribute vec4 a_Position;
+attribute vec2 a_TextureCoordinates;
+
+varying vec2 v_TextureCoordinates;
+
+void main()
+{
+    v_TextureCoordinates = a_TextureCoordinates;
+    gl_Position = u_Matrix * a_Position;
+}
+```
+
+And our tex_rectangle_fragment_shader.glsl
+
+```glsl
+precision mediump float;
+
+uniform sampler2D u_TextureUnit;
+varying vec2 v_TextureCoordinates;
+
+void main()
+{
+    gl_FragColor = texture2D(u_TextureUnit, v_TextureCoordinates);
+}
+```
+
+Find the tex attribute and uniform
+
+Generate a new texture id
+
+Set wrap parameter
+
+Set filter parameter
+
+Prepare bitmap data
+
+Load in texture
+
+Bind texture id
+
+Recycle bitmap
+
+Unbind texture id
+
+Generate mipmap
+
+Use number 1 texture unit
+
+```java
+private static final String A_TEXTURECOORDINATES = "a_TextureCoordinates";
+private static final String U_TEXTUREUNIT        = "u_TextureUnit";
+
+private int         m_aTexturecoordinates;
+private int         m_uTextureunit;
+
+public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    
+    // find the tex attribute and uniform
+	m_uTextureunit = GLES20.glGetUniformLocation(mSimpleProgram, U_TEXTUREUNIT);
+	m_aTexturecoordinates = GLES20.glGetAttribLocation(mSimpleProgram, 						A_TEXTURECOORDINATES);
+    
+    // generate a new texture id
+    inal int[] textureObjectIds = new int[1];
+	GLES20.glGenTextures(1, textureObjectIds, 0);
+    
+    // set wrap parameter
+	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, 					GLES20.GL_REPEAT);
+	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, 					GLES20.GL_REPEAT);
+    
+    // set filter parameter
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, 				GLES20.GL_LINEAR_MIPMAP_LINEAR);
+	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, 				GLES20.GL_LINEAR);
+    
+    // prepare bitmap data
+    final BitmapFactory.Options options = new BitmapFactory.Options();
+	options.inScaled = false;
+	Bitmap bitmap = BitmapFactory.decodeResource(mCtx.getResources(), 						R.drawable.tex128);
+	if (bitmap == null) {
+		Log.e(TAG, "onSurfaceCreated: decode bitmap failed!");
+		return;
+	}
+    
+    // load in texture
+	GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+    
+    // bind texture id
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureObjectIds[0]);
+    
+    // recycle bitmap
+	bitmap.recycle();
+    
+    // unbind texture id
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+    
+    // generate mipmap
+    GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+    
+    // use number 0 texture unit
+	GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+	GLES20.glBindBuffer(GLES20.GL_TEXTURE_2D, textureObjectIds[0]);
+	GLES20.glUniform1i(m_uTextureunit, 0);
+}
+```
+
+<img src="./img/texture_rectangle.png" style="zoom:30%" />
+
+
+
