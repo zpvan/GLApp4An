@@ -644,3 +644,106 @@ public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
 
 
+### Project 8
+
+#### Description: draw a mix two textures rectangle
+
+Show fragment shader first
+
+```glsl
+precision mediump float;
+
+uniform sampler2D u_TextureUnit1;
+uniform sampler2D u_TextureUnit2;
+
+varying vec2 v_TextureCoordinates;
+
+void main()
+{
+    vec4 tex1 = texture2D(u_TextureUnit1, v_TextureCoordinates);
+    vec4 tex2 = texture2D(u_TextureUnit2, v_TextureCoordinates);
+    gl_FragColor = tex1 * tex2;
+}
+```
+
+Now, it's known that we need two textureUnit.
+
+Let's find them
+
+```java
+private static final String U_TEXTUREUNIT1       = "u_TextureUnit1";
+private static final String U_TEXTUREUNIT2       = "u_TextureUnit2";
+
+m_uTextureunit1 = GLES20.glGetUniformLocation(mSimpleProgram, U_TEXTUREUNIT1);
+m_uTextureunit2 = GLES20.glGetUniformLocation(mSimpleProgram, U_TEXTUREUNIT2);
+```
+
+Make one function to create texture2D
+
+```java
+public static int createTexture2D(Context context, int resId) {
+	// generate a new texture id
+	int[] textureId = new int[1];
+	GLES20.glGenTextures(1, textureId, 0);
+	if (textureId[0] == 0) {
+		Log.e(TAG, "createTexture: glGenTextures failed!");
+		return -1;
+	}
+	// bind the new texture to GL_TEXTURE_2D
+	GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0]);
+	// set wrap parameter
+	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, 					GLES20.GL_REPEAT);
+	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, 					GLES20.GL_REPEAT);
+	// set filter parameter
+	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, 				GLES20.GL_LINEAR_MIPMAP_LINEAR);
+	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, 				GLES20.GL_LINEAR);
+
+	// prepare bitmap data
+	final BitmapFactory.Options options = new BitmapFactory.Options();
+	options.inScaled = false;
+	final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId, 			options);
+	if (bitmap == null) {
+		Log.e(TAG, "createTexture: decode bitmap failed!");
+		return -1;
+	}
+    
+    // set bitmap to GL_TEXTURE_2D
+	GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+    // generate mipmap
+    GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+    
+	bitmap.recycle();
+	return textureId[0];
+}
+```
+
+Create two 2D texture
+
+```java
+private int         mTextureObjectId1;
+private int         mTextureObjectId2;
+
+mTextureObjectId1 = EsUtil.createTexture2D(mCtx, R.drawable.tex128);
+mTextureObjectId2 = EsUtil.createTexture2D(mCtx, R.drawable.tex256);
+```
+
+Bind the texture to the textureUnit
+
+Each object can have 32 textures, by default, active number 0 texture
+
+Here, we active number 0 and number 1 texture manually.
+
+```java
+GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureObjectId1);
+GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureObjectId2);
+
+GLES20.glUniform1i(m_uTextureunit1, 0);
+GLES20.glUniform1i(m_uTextureunit2, 1);
+```
+
+We get a mix two textures rectangle as the below image.
+
+<img src="./img/mix_two_tex_rect.png" style="zoom:30%" />
+
