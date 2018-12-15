@@ -747,3 +747,120 @@ We get a mix two textures rectangle as the below image.
 
 <img src="./img/mix_two_tex_rect.png" style="zoom:30%" />
 
+
+
+### Project 9
+
+#### Description: draw a mix two textures rectangle and one can move
+
+Firstly, show the two shader.
+
+move_tex_rect_vertex_shader.glsl
+
+```glsl
+uniform mat4 u_Matrix;
+attribute vec4 a_Position;
+attribute vec2 a_TextureCoordinates1;
+attribute vec2 a_TextureCoordinates2;
+
+varying vec2 v_TextureCoordinates1;
+varying vec2 v_TextureCoordinates2;
+
+void main()
+{
+    v_TextureCoordinates1 = a_TextureCoordinates1;
+    v_TextureCoordinates2 = a_TextureCoordinates2;
+    gl_Position = u_Matrix * a_Position;
+}
+```
+
+move_tex_rect_fragment_shader.glsl
+
+```glsl
+precision mediump float;
+
+uniform sampler2D u_TextureUnit1;
+uniform sampler2D u_TextureUnit2;
+
+varying vec2 v_TextureCoordinates1;
+varying vec2 v_TextureCoordinates2;
+
+void main()
+{
+    vec4 tex1 = texture2D(u_TextureUnit1, v_TextureCoordinates1);
+    vec4 tex2 = texture2D(u_TextureUnit2, v_TextureCoordinates2);
+    gl_FragColor = tex1 * tex2;
+}
+```
+
+Make one function to do glVertexAttribPointer and glEnableVertexAttribArray
+
+```java
+public static void VertexAttribArrayAndEnable(int indx,
+                                           int size,
+                                           int type,
+                                           boolean normalized,
+                                           int stride,
+                                           float[] buffer) {
+
+	GLES20.glVertexAttribPointer(indx, size, type,
+		normalized,
+		stride,
+		NatBufUtil.allocateFloatBuffer(buffer));
+
+	GLES20.glEnableVertexAttribArray(indx);
+}
+```
+
+Seperate textureUnit2, bind it to textCoordinate2
+
+```java
+private static final String A_TEXTURECOORDINATES1 = "a_TextureCoordinates1";
+private static final String A_TEXTURECOORDINATES2 = "a_TextureCoordinates2";
+
+m_aTexturecoordinates1 = GLES20.glGetAttribLocation(mSimpleProgram, 					A_TEXTURECOORDINATES1);
+m_aTexturecoordinates2 = GLES20.glGetAttribLocation(mSimpleProgram, 					A_TEXTURECOORDINATES2);
+
+private static final String U_TEXTUREUNIT1       = "u_TextureUnit1";
+private static final String U_TEXTUREUNIT2       = "u_TextureUnit2";
+
+m_uTextureunit1 = GLES20.glGetUniformLocation(mSimpleProgram, U_TEXTUREUNIT1);
+m_uTextureunit2 = GLES20.glGetUniformLocation(mSimpleProgram, U_TEXTUREUNIT2);
+
+private float[] texture1Vertices = new float[] {
+	// s, t
+	0f, 0f,
+	1f, 0f,
+	0.5f, 0.5f,
+	1f, 1f,
+	0f, 1f,
+	0f, 0f,
+};
+private float[] texture2Vertices = new float[] {
+	0f, 0f,
+	1f, 0f,
+	0.5f, 0.5f,
+	1f, 1f,
+	0f, 1f,
+	0f, 0f,
+};
+
+EsUtil.VertexAttribArrayAndEnable(m_aTexturecoordinates1, TEXTURE_COMPONENT_COUNT,
+	GLES20.GL_FLOAT, false, 0, texture1Vertices);
+EsUtil.VertexAttribArrayAndEnable(m_aTexturecoordinates2, TEXTURE_COMPONENT_COUNT,
+	GLES20.GL_FLOAT, false, 0, texture2Vertices);
+```
+
+Every time we draw, we need to change texture2Vertices
+
+```java
+for (int i = 0; i < texture2Vertices.length; i += TEXTURE_COMPONENT_COUNT) {
+	texture2Vertices[i] += 0.005f;
+}
+EsUtil.VertexAttribArrayAndEnable(m_aTexturecoordinates2, TEXTURE_COMPONENT_COUNT,
+	GLES20.GL_FLOAT, false, 0, texture2Vertices);
+```
+
+We get a moved and mixed two textures rectangle as the below video.
+
+<iframe height=500 width=500 src="./img/move_tex_rectangle.mov"/>

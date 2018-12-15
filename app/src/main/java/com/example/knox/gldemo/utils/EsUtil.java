@@ -224,4 +224,19 @@ public class EsUtil {
         bitmap.recycle();
         return textureId[0];
     }
+
+    public static void VertexAttribArrayAndEnable(int indx,
+                                           int size,
+                                           int type,
+                                           boolean normalized,
+                                           int stride,
+                                           float[] buffer) {
+
+        GLES20.glVertexAttribPointer(indx, size, type,
+                normalized,
+                stride,
+                NatBufUtil.allocateFloatBuffer(buffer));
+
+        GLES20.glEnableVertexAttribArray(indx);
+    }
 }

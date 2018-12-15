@@ -98,6 +98,7 @@
         </activity>
         -->
 
+
         <!--
         <activity android:name=".activity.TexRectangleActivity">
             <intent-filter>
@@ -108,7 +109,17 @@
         </activity>
         -->
 
+        <!--
         <activity android:name=".activity.TwoTexRectActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+        
+        <activity android:name=".activity.MoveTexRectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
