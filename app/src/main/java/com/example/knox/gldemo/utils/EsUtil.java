@@ -225,6 +225,40 @@ public class EsUtil {
         return textureId[0];
     }
 
+    public static int createSeamlessTexture2D(Context context, int resId) {
+        // generate a new texture id
+        int[] textureId = new int[1];
+        GLES20.glGenTextures(1, textureId, 0);
+        if (textureId[0] == 0) {
+            Log.e(TAG, "createTexture2D: glGenTextures failed!");
+            return -1;
+        }
+        // bind the new texture to GL_TEXTURE_2D
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0]);
+        // set wrap parameter
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+        // set filter parameter
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+
+        // prepare bitmap data
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId, options);
+        if (bitmap == null) {
+            Log.e(TAG, "createTexture2D: decode bitmap failed!");
+            return -1;
+        }
+        // set bitmap to GL_TEXTURE_2D
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+        // generate mipmap
+        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+
+        bitmap.recycle();
+        return textureId[0];
+    }
+
     public static void VertexAttribArrayAndEnable(int indx,
                                            int size,
                                            int type,
