@@ -10,6 +10,7 @@ import com.example.knox.gldemo.R;
 import com.example.knox.gldemo.utils.EsUtil;
 import com.example.knox.gldemo.utils.MatrixUtil;
 import com.example.knox.gldemo.utils.ResUtil;
+import com.example.knox.gldemo.widget.TouchEventCallback;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -20,7 +21,7 @@ import javax.microedition.khronos.opengles.GL10;
  * @desc ${TODD}
  */
 
-public class RunOnGrassRenderer implements GLSurfaceView.Renderer {
+public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCallback {
 
     private static final String TAG = "RunOnGrassRenderer";
 
@@ -44,17 +45,13 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer {
 
     private int mTextureObjectId;
     private final float[] mProjectionMatrix = new float[16];
+    private final float[] mViewMatrix = new float[16];
+    private final float[] mViewProjectionMatrix = new float[16];
+    private final float[] mMVPMatrix = new float[16];
+    private final float[] mModelMatrix = new float[16];
 
     private float[] frontGrassVertices = new float[]{
             // X Y Z W
-//            -1, 1, 1, 1,
-//            1, 1, 1, 1,
-//            -1, -1, 1, 1,
-//
-//            1, 1, 1, 1,
-//            1, -1, 1, 1,
-//            -1, -1, 1, 1,
-
             -8.0f, 8.0f, 0, 1,
             8.0f, 8.0f, 0, 1,
             -8.0f, -8.0f, 0, 1,
@@ -124,38 +121,14 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
 
-        // 使用program的参数前, 要启动对应的program
-        GLES20.glUseProgram(mGrassProgram);
-
-        final float aspectRadio = (width > height) ? ((float) width / (float) height) : ((float) height / (float) width);
-        if (width > height) {
-            Matrix.orthoM(mProjectionMatrix, 0, -aspectRadio, aspectRadio, -1f, 1f, -1f, 1f);
-        } else {
-            Matrix.orthoM(mProjectionMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
-        }
-
-        Log.e(TAG, "onSurfaceChanged: " + MatrixUtil.print(mProjectionMatrix));
-
-        final float[] modelMatrix = new float[16];
-        Matrix.setIdentityM(modelMatrix, 0);
-        Matrix.translateM(modelMatrix, 0, 0f, 0f, -50f);
-
-        final float[] projectionMatrix1 = new float[16];
-        MatrixUtil.perspectiveM(projectionMatrix1, 45, (float) width
+        MatrixUtil.perspectiveM(mProjectionMatrix, 45, (float) width
                 / (float) height, 1f, 100f);
-        Log.e(TAG, "onSurfaceChanged: [projectionMatrix1]=[" + MatrixUtil.print(projectionMatrix1) + "]");
 
-        final float[] projectionMatrix2 = new float[16];
-        Matrix.perspectiveM(projectionMatrix2,0, 45, (float) width
-                / (float) height, 1f, 10f);
-        Log.e(TAG, "onSurfaceChanged: [projectionMatrix2]=[" + MatrixUtil.print(projectionMatrix2) + "]");
+        Matrix.setLookAtM(mViewMatrix, 0, 0, 1.7f, 10.2f,
+                0, 0, 0,
+                0, 1f, 0f);
 
-        final float[] temp = new float[16];
-        Matrix.multiplyMM(temp, 0, projectionMatrix1, 0, modelMatrix, 0);
-        GLES20.glUniformMatrix4fv(m_uMatrix, 1, false, temp, 0);
-
-        // 使用program的参数后, 要关闭对应的program
-        GLES20.glUseProgram(0);
+        Matrix.multiplyMM(mViewProjectionMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
     }
 
     @Override
@@ -178,7 +151,30 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0,
                 frontGrassVertices.length / POSITION_COMPONENT_COUNT);
 
+        Matrix.setIdentityM(mModelMatrix, 0);
+        Matrix.translateM(mModelMatrix, 0, 0f, 0f, -2f);
+        Matrix.rotateM(mModelMatrix, 0, -90f, 1f, 0f, 0f);
+
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewProjectionMatrix, 0, mModelMatrix, 0);
+
+        GLES20.glUniformMatrix4fv(m_uMatrix, 1, false, mMVPMatrix, 0);
+
         // 使用program的参数后, 要关闭对应的program
         GLES20.glUseProgram(0);
+    }
+
+    @Override
+    public void moveCallback(float x, float y) {
+        Log.e(TAG, "moveCallback: [x, y]=[" + x + ", " + y + "]");
+    }
+
+    @Override
+    public void scaleCallback(double scale) {
+        Log.e(TAG, "scaleCallback: [scale]=[" + scale + "]");
+    }
+
+    @Override
+    public void rotateCallback(float rotate) {
+        Log.e(TAG, "rotateCallback: [rotate]=[" + rotate + "]");
     }
 }
