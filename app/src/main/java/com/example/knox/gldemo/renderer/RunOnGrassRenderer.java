@@ -36,6 +36,7 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int TEXTURE_COMPONENT_COUNT = 2;
     private static final float TEXTURE_REPEAT = 40.0f;
+    private static final float GRASS_SIDE_LENGTH = 100.0f;
 
     private Context mCtx;
 
@@ -52,6 +53,8 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
     private int mWidth;
     private int mHeight;
     private int mScope;
+    private float mY;
+    private float mSpeed;
 
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
@@ -61,14 +64,14 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
     private final float[] mBoxModelMatrix = new float[16];
 
     private float[] bottomGrassVertices = new float[]{
-            //   X   Y         Z
-            -80.0f,  -1,   80.0f,
-             80.0f,  -1,   80.0f,
-            -80.0f,  -1,  -80.0f,
+            //   X                Y                    Z
+            -GRASS_SIDE_LENGTH,  -1,   GRASS_SIDE_LENGTH,
+             GRASS_SIDE_LENGTH,  -1,   GRASS_SIDE_LENGTH,
+            -GRASS_SIDE_LENGTH,  -1,  -GRASS_SIDE_LENGTH,
 
-             80.0f,  -1,   80.0f,
-             80.0f,  -1,  -80.0f,
-            -80.0f,  -1,  -80.0f,
+             GRASS_SIDE_LENGTH,  -1,   GRASS_SIDE_LENGTH,
+             GRASS_SIDE_LENGTH,  -1,  -GRASS_SIDE_LENGTH,
+            -GRASS_SIDE_LENGTH,  -1,  -GRASS_SIDE_LENGTH,
     };
 
     private float[] texGrassVertices = new float[]{
@@ -218,6 +221,8 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
         mWidth = width;
         mHeight = height;
         mScope = 1;
+        mY = 0;
+        mSpeed = 0.1f;
     }
 
     @Override
@@ -235,10 +240,29 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
         if (fov >= 45.0)
             fov = 45.0f;
         MatrixUtil.perspectiveM(mProjectionMatrix, fov, (float) mWidth
-                / (float) mHeight, 1f, 100f);
+                / (float) mHeight, 1f, 200f);
 
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 1.7f, 50.0f,
-                0, 0, 0,
+        // float radius = 10f;
+        // double camX = Math.sin((System.currentTimeMillis() - mBaseTimeMs) / 5) * radius;
+        // double camZ = Math.cos((System.currentTimeMillis() - mBaseTimeMs) / 5) * radius;
+
+        float[] cameraPos = new float[] {0.0f, 0.0f, 20.0f - mSpeed * mY};
+        /**
+         * 不能跑出草地
+         */
+        if (cameraPos[2] > GRASS_SIDE_LENGTH) {
+            cameraPos[2] = GRASS_SIDE_LENGTH;
+            mY = (GRASS_SIDE_LENGTH - 20.0f) / (-mSpeed);
+        }
+        if (cameraPos[2] < -(GRASS_SIDE_LENGTH - 5)) {
+            cameraPos[2] = -(GRASS_SIDE_LENGTH - 5);
+            mY = (-(GRASS_SIDE_LENGTH - 5) - 20.0f) / (-mSpeed);
+        }
+        
+        float[] cameraFront = new float[] {0.0f, 0.0f, -1.0f};
+        Matrix.setLookAtM(mViewMatrix, 0,
+                cameraPos[0], cameraPos[1], cameraPos[2],
+                cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2],
                 0, 1f, 0f);
 
 
@@ -284,6 +308,7 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
     @Override
     public void moveCallback(float x, float y) {
         Log.e(TAG, "moveCallback: [x, y]=[" + x + ", " + y + "]");
+        mY += y;
     }
 
     @Override
