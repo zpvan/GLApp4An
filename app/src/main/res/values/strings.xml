@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">GLDemo</string>
+
+    <string name="scope_8">8x</string>
+    <string name="scope_6">6x</string>
+    <string name="scope_4">4x</string>
+    <string name="scope_3">3x</string>
+    <string name="scope_2">2x</string>
+
 </resources>
