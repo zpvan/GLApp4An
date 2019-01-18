@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.knox.gldemo.utils.EsUtil;
+import com.example.knox.gldemo.utils.WindowUtil;
 import com.example.knox.gldemo.widget.NamedTextView;
 
 abstract public class SingleGraphicActivity extends AppCompatActivity {
@@ -22,6 +23,7 @@ abstract public class SingleGraphicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        WindowUtil.setLandscape(this);
         mRootFrameLayout = new FrameLayout(this);
 
         if (EsUtil.supportEs2(this)) {
