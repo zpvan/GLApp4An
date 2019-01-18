@@ -8,4 +8,5 @@ package com.example.knox.gldemo.widget;
 
 public interface ButtonCallback {
     void setXScope(int scope, boolean open);
+    void move(boolean go);
 }

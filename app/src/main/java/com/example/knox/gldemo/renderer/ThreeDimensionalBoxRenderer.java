@@ -177,7 +177,6 @@ public class ThreeDimensionalBoxRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
-
         GLES30.glUseProgram(mSimpleProgram);
 
         MatrixUtil.perspectiveM(mProjectionMatrix, 45, (float) width

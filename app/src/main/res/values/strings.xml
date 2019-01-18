@@ -7,4 +7,7 @@
     <string name="scope_3">3x</string>
     <string name="scope_2">2x</string>
 
+    <string name="go">go</string>
+    <string name="back">back</string>
+
 </resources>

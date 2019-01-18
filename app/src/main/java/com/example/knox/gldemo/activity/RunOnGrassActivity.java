@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -63,8 +64,59 @@ public class RunOnGrassActivity extends AppCompatActivity {
         mRootLayout.addView(namedTextView);
 
         setPowerLens(this, mRootLayout, mRunOnGrassRenderer);
+        setGoBack(this, mRootLayout, mRunOnGrassRenderer);
 
         setContentView(mRootLayout);
+    }
+
+    private void setGoBack(Context context, RelativeLayout rootLayout, final ButtonCallback callback) {
+        View linearlayout_go_back = LayoutInflater.from(this).inflate(R.layout.linearlayout_go_back, null);
+        float pxDimension = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, context.getResources().getDisplayMetrics());
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams((int) pxDimension, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        rootLayout.addView(linearlayout_go_back, layoutParams);
+
+        ArrayList<Button> btns =  new ArrayList<>();
+        btns.add((Button) linearlayout_go_back.findViewById(R.id.go));
+        btns.add((Button) linearlayout_go_back.findViewById(R.id.back));
+        if (btns.size() == 0) {
+            Log.e(TAG, "setGoBack: no move btn");
+            return;
+        }
+        for (int i = 0; i < btns.size(); i++) {
+            Button button = btns.get(i);
+            button.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+
+                            break;
+
+                        case MotionEvent.ACTION_MOVE:
+                            if (v instanceof Button) {
+                                CharSequence text = ((Button) v).getText();
+                                if (text.equals("go")) {
+                                    if (callback != null) {
+                                        callback.move(true);
+                                    }
+                                }
+                                if (text.equals("back")) {
+                                    if (callback != null) {
+                                        callback.move(false);
+                                    }
+                                }
+                            }
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+
+                            break;
+                    }
+                    return true;
+                }
+            });
+        }
     }
 
     private void setPowerLens(Context context, RelativeLayout rootLayout, final ButtonCallback callback) {

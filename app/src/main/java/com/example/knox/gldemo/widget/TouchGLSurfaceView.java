@@ -27,6 +27,8 @@ public class TouchGLSurfaceView extends GLSurfaceView {
     private float   mOldRota;
     private boolean mDoScaleOrRotate;
     private boolean mCancel;
+    private boolean fX;
+    private boolean fY;
 
     private TouchEventCallback mCallback;
 
@@ -61,7 +63,15 @@ public class TouchGLSurfaceView extends GLSurfaceView {
                     float dy = mDownY - event.getY();
                     mDownX = event.getX();
                     mDownY = event.getY();
-//                    Log.e(TAG, "onTouchEvent: ACTION_MOVE [dx, dy]=[" + dx + ", " + dy + "]");
+                    // Log.e(TAG, "onTouchEvent: ACTION_MOVE [dx, dy]=[" + dx + ", " + dy + "]");
+                    if (dx != 0 && !fX) {
+                        dx /= 10;
+                        fX = true;
+                    }
+                    if (dy != 0 && !fY) {
+                        dy /= 10;
+                        fY = true;
+                    }
                     if (mCallback != null) {
                         mCallback.moveCallback(dx, dy);
                     }
@@ -93,6 +103,8 @@ public class TouchGLSurfaceView extends GLSurfaceView {
                 mDownY = 0;
                 mDoScaleOrRotate = false;
                 mCancel = false;
+                fX = false;
+                fY = true;
                 break;
 
             case MotionEvent.ACTION_POINTER_DOWN:

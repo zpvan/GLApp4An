@@ -37,6 +37,9 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
     private static final int TEXTURE_COMPONENT_COUNT = 2;
     private static final float TEXTURE_REPEAT = 40.0f;
     private static final float GRASS_SIDE_LENGTH = 100.0f;
+    private static final float YAW_SENSITIVITY = 0.005f;
+    private static final float PITCH_SENSITIVITY = 0.002f;
+    private static final float MOVE_SPEED = 0.3f;
 
     private Context mCtx;
 
@@ -53,8 +56,10 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
     private int mWidth;
     private int mHeight;
     private int mScope;
-    private float mY;
+    private float mMove;
     private float mSpeed;
+    private double mYaw;
+    private double mPitch;
 
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
@@ -221,8 +226,10 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
         mWidth = width;
         mHeight = height;
         mScope = 1;
-        mY = 0;
+        mMove = 0;
         mSpeed = 0.1f;
+        mYaw = 0;
+        mPitch = 0;
     }
 
     @Override
@@ -246,25 +253,24 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
         // double camX = Math.sin((System.currentTimeMillis() - mBaseTimeMs) / 5) * radius;
         // double camZ = Math.cos((System.currentTimeMillis() - mBaseTimeMs) / 5) * radius;
 
-        float[] cameraPos = new float[] {0.0f, 0.0f, 20.0f - mSpeed * mY};
+        float[] cameraPos = new float[] {0.0f + (mMove * (float) Math.sin(mYaw)), 0.0f, 20.0f - (mMove * (float) Math.cos(mYaw))};
         /**
          * 不能跑出草地
          */
         if (cameraPos[2] > GRASS_SIDE_LENGTH) {
             cameraPos[2] = GRASS_SIDE_LENGTH;
-            mY = (GRASS_SIDE_LENGTH - 20.0f) / (-mSpeed);
+            mMove = (GRASS_SIDE_LENGTH - 20.0f) / (-(float) Math.cos(mYaw));
         }
         if (cameraPos[2] < -(GRASS_SIDE_LENGTH - 5)) {
             cameraPos[2] = -(GRASS_SIDE_LENGTH - 5);
-            mY = (-(GRASS_SIDE_LENGTH - 5) - 20.0f) / (-mSpeed);
+            mMove = (-(GRASS_SIDE_LENGTH - 5) - 20.0f) / (-(float) Math.cos(mYaw));
         }
-        
-        float[] cameraFront = new float[] {0.0f, 0.0f, -1.0f};
+
+        float[] cameraFront = new float[] {(float) Math.sin(mYaw), (float) Math.sin(mPitch), -(((float) Math.cos(mYaw)) * ((float) Math.cos(mPitch)))};
         Matrix.setLookAtM(mViewMatrix, 0,
                 cameraPos[0], cameraPos[1], cameraPos[2],
                 cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2],
                 0, 1f, 0f);
-
 
         Matrix.multiplyMM(mViewProjectionMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         // 画草地
@@ -308,7 +314,16 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
     @Override
     public void moveCallback(float x, float y) {
         Log.e(TAG, "moveCallback: [x, y]=[" + x + ", " + y + "]");
-        mY += y;
+        // 抬头低头
+        mPitch += y * PITCH_SENSITIVITY;
+        if (mPitch < 0) {
+            mPitch = 0;
+        }
+        if (mPitch > 89) {
+            mPitch = 89;
+        }
+        // 左右看
+        mYaw += x * YAW_SENSITIVITY;
     }
 
     @Override
@@ -328,6 +343,15 @@ public class RunOnGrassRenderer implements GLSurfaceView.Renderer, TouchEventCal
             mScope = scope;
         } else {
             mScope = 1;
+        }
+    }
+
+    @Override
+    public void move(boolean go) {
+        if (go) {
+            mMove += MOVE_SPEED;
+        } else {
+            mMove -= MOVE_SPEED;
         }
     }
 }
