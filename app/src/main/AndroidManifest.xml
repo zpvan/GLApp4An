@@ -153,6 +153,7 @@
         </activity>
         -->
 
+
         <!--
         <activity android:name=".activity.PhoneLightActivity">
             <intent-filter>
@@ -163,7 +164,17 @@
         </activity>
         -->
 
+        <!--
         <activity android:name=".activity.AmbientActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+
+        <activity android:name=".activity.DiffuseActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
