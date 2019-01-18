@@ -2,7 +2,7 @@ package com.example.knox.gldemo.activity;
 
 import android.opengl.GLSurfaceView;
 
-import com.example.knox.gldemo.renderer.LightRenderer;
+import com.example.knox.gldemo.renderer.PhongLightRenderer;
 
 public class PhoneLightActivity extends SingleGraphicActivity {
 
@@ -10,7 +10,7 @@ public class PhoneLightActivity extends SingleGraphicActivity {
 
     @Override
     protected GLSurfaceView.Renderer getChildGlRenderer() {
-        return new LightRenderer(this);
+        return new PhongLightRenderer(this);
     }
 
     @Override
