@@ -142,6 +142,7 @@
         </activity>
         -->
 
+
         <!--
         <activity android:name=".activity.RunOnGrassActivity">
             <intent-filter>
@@ -152,7 +153,17 @@
         </activity>
         -->
 
+        <!--
         <activity android:name=".activity.PhoneLightActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+
+        <activity android:name=".activity.AmbientActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
