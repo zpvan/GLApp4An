@@ -52,6 +52,9 @@ public class DiffuseRenderer implements GLSurfaceView.Renderer {
     private int uLightPos;
     private int uNormalizeModel;
 
+    private final float[] mEyePosition = {0.0f, 1.7f, 5.1f};
+    private final float[] mLightPosition = {10.0f, 0.0f, -10.0f};
+
     float boxVertices[] = {
             //  X      Y      Z
             //  z=-0.5的一面
@@ -209,9 +212,8 @@ public class DiffuseRenderer implements GLSurfaceView.Renderer {
                 / (float) height, 1f, 100f);
 
         Matrix.setIdentityM(mViewMatrix, 0);
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 1.7f, 5.1f,
-                0, 0, 0,
-                0, 1f, 0f);
+        Matrix.setLookAtM(mViewMatrix, 0, mEyePosition[0], mEyePosition[1], mEyePosition[2],
+                0, 0, 0, 0, 1f, 0f);
 
         Matrix.multiplyMM(mViewProjectionMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
@@ -252,7 +254,7 @@ public class DiffuseRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glUniform3f(uObjectObjecColor, 1.0f, 0.5f, 0.31f);
         GLES20.glUniform3f(uObjectLightColor, 1.0f, 1.0f, 1.0f);
-        GLES20.glUniform3f(uLightPos, 10.0f, 0, -10.0f);
+        GLES20.glUniform3f(uLightPos, mLightPosition[0], mLightPosition[1], mLightPosition[2]);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
                 boxVertices.length / POSITION_COMPONENT_COUNT);
@@ -263,7 +265,7 @@ public class DiffuseRenderer implements GLSurfaceView.Renderer {
         EsUtil.VertexAttribArrayAndEnable(aLightPosition, POSITION_COMPONENT_COUNT, GLES20.GL_FLOAT,
                 false, 0, boxVertices);
         Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, 10.0f, 0, -10.0f);
+        Matrix.translateM(mModelMatrix, 0, mLightPosition[0], mLightPosition[1], mLightPosition[2]);
         Matrix.multiplyMM(mMVPMatrix, 0, mViewProjectionMatrix, 0, mModelMatrix, 0);
         GLES20.glUniformMatrix4fv(uLightMatrix, 1, false, mMVPMatrix, 0);
 
