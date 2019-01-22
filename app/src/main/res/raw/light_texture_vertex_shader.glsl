@@ -17,6 +17,7 @@ void main()
     gl_Position = u_Projection * u_View * u_Model * a_Position;
     v_FragPos = vec3(u_Model * a_Position);
     v_Normalize = a_Normalize;
+    v_TextureCoords = a_TextureCoords;
     // v_Normalize = vec3(u_Model * vec4(a_Normalize, 1.0));
     // v_Normalize = vec3(u_NormalizeModel * vec4(a_Normalize, 1.0));
     // v_Normalize = mat3(transpose(inverse(u_Model)) * a_Normalize);

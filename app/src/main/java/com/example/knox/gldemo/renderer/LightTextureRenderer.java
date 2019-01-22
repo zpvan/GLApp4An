@@ -42,8 +42,10 @@ public class LightTextureRenderer implements GLSurfaceView.Renderer {
     private static final String U_LIGHT_AMBIENT = "u_Light.ambient";
     private static final String U_LIGHT_DIFFUSE = "u_Light.diffuse";
     private static final String U_LIGHT_SPECULAR = "u_Light.specular";
+    private static final String A_TEXTURECOORDS = "a_TextureCoords";
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int NORMALIZE_COMPONENT_COUNT = 3;
+    private static final int TEXTURE_COMPONENT_COUNT = 2;
 
     private final float[] mEyePosition = {0.0f, 1.7f, 5.1f};
     private final float[] mLightPosition = {10.0f, 0.0f, -10.0f};
@@ -70,6 +72,9 @@ public class LightTextureRenderer implements GLSurfaceView.Renderer {
     private int uLightAmbient;
     private int uLightDiffuse;
     private int uLightSpecular;
+    private int mWoodenDiffuseTex;
+    private int mWoodenSpecularTex;
+    private int mTextureCoords;
 
     float boxVertices[] = {
             //  X      Y      Z
@@ -228,8 +233,8 @@ public class LightTextureRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0f, 0f, 0f, 1f);
 
         mObjectProgram = EsUtil.shaderCode2Program(
-                ResUtil.readResource2String(mCtx, R.raw.material_vertex_shader),
-                ResUtil.readResource2String(mCtx, R.raw.material_fragment_shader));
+                ResUtil.readResource2String(mCtx, R.raw.light_texture_vertex_shader),
+                ResUtil.readResource2String(mCtx, R.raw.light_texture_fragment_shader));
 
         if (mObjectProgram == 0) {
             Log.e(TAG, "onSurfaceCreated: program failed!");
@@ -252,9 +257,22 @@ public class LightTextureRenderer implements GLSurfaceView.Renderer {
         uMaterialDiffuse = GLES20.glGetUniformLocation(mObjectProgram, U_MATERIAL_DIFFUSE);
         uMaterialSpecular = GLES20.glGetUniformLocation(mObjectProgram, U_MATERIAL_SPECULAR);
         uMaterialShininess = GLES20.glGetUniformLocation(mObjectProgram, U_MATERIAL_SHININESS);
-        uLightAmbient = GLES20.glGetUniformLocation(mObjectProgram, U_LIGHT_AMBIENT);
+        // uLightAmbient = GLES20.glGetUniformLocation(mObjectProgram, U_LIGHT_AMBIENT);
         uLightDiffuse = GLES20.glGetUniformLocation(mObjectProgram, U_LIGHT_DIFFUSE);
         uLightSpecular = GLES20.glGetUniformLocation(mObjectProgram, U_LIGHT_SPECULAR);
+        mTextureCoords = GLES20.glGetAttribLocation(mObjectProgram, A_TEXTURECOORDS);
+
+        mWoodenDiffuseTex = EsUtil.createTexture2D(mCtx, R.drawable.wooden_box_diff_tex);
+        mWoodenSpecularTex = EsUtil.createTexture2D(mCtx, R.drawable.wooden_box_spe_tex);
+        /**
+         * 所有创建纹理一定要在activeTexture之前, 要不总是会有纹理不对的问题
+         */
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mWoodenDiffuseTex);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mWoodenSpecularTex);
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
@@ -310,6 +328,9 @@ public class LightTextureRenderer implements GLSurfaceView.Renderer {
         EsUtil.VertexAttribArrayAndEnable(aNormalize, NORMALIZE_COMPONENT_COUNT, GLES20.GL_FLOAT,
                 false, 0, boxNormalizedVertices);
 
+        EsUtil.VertexAttribArrayAndEnable(mTextureCoords, TEXTURE_COMPONENT_COUNT, GLES20.GL_FLOAT,
+                false, 0, boxTextureVertices);
+
         Matrix.setIdentityM(mModelMatrix, 0);
         Matrix.translateM(mModelMatrix, 0, 0, 0, -5.0f);
         // Matrix.rotateM(mModelMatrix, 0, 2f * ((System.currentTimeMillis() - mBaseTimeMs) / 100), 0.5f, 1f, 0f);
@@ -337,9 +358,11 @@ public class LightTextureRenderer implements GLSurfaceView.Renderer {
         // GLES20.glUniform3f(uLightDiffuse, 0.5f, 0.5f, 0.5f);
         // GLES20.glUniform3f(uLightSpecular, 1.0f, 1.0f, 1.0f);
 
-        GLES20.glUniform3f(uMaterialAmbient, 0.0215f, 0.1745f, 0.0215f);
-        GLES20.glUniform3f(uMaterialDiffuse, 0.07568f, 0.61424f, 0.07568f);
-        GLES20.glUniform3f(uMaterialSpecular, 0.633f, 0.727811f, 0.633f);
+        // GLES20.glUniform3f(uMaterialAmbient, 0.0215f, 0.1745f, 0.0215f);
+        // GLES20.glUniform3f(uMaterialDiffuse, 0.07568f, 0.61424f, 0.07568f);
+        GLES20.glUniform1i(uMaterialDiffuse, 0);
+        // GLES20.glUniform3f(uMaterialSpecular, 0.633f, 0.727811f, 0.633f);
+        GLES20.glUniform1i(uMaterialSpecular, 1);
         GLES20.glUniform1f(uMaterialShininess, 128 * 0.6f);
 
         GLES20.glUniform3f(uLightAmbient, 1.0f, 1.0f, 1.0f);

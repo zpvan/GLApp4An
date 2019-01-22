@@ -12,7 +12,7 @@ varying vec2 v_TextureCoords;
 
 struct Material {
     sampler2D diffuse;
-    vec3 specular;
+    sampler2D specular;
     float shininess;
 };
 
@@ -29,20 +29,20 @@ uniform Light u_Light;
 void main() {
 
     // 环境光
-    vec3 ambient = u_Light.ambient * vec3(texture(u_Material.diffuse, v_TextureCoords));
+    vec3 ambient = u_Light.ambient * vec3(texture2D(u_Material.diffuse, v_TextureCoords));
 
     // 漫反射
     vec3 norm = normalize(v_Normalize);
     vec3 lightDir = normalize(u_lightPos - v_FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = u_Light.diffuse * (diff * vec3(texture(u_Material.diffuse, v_TextureCoords)));
+    vec3 diffuse = u_Light.diffuse * (diff * vec3(texture2D(u_Material.diffuse, v_TextureCoords)));
 
     // 镜面高光
     float specularStrength = 0.5;
     vec3 viewDir = normalize(u_ViewPos - v_FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Material.shininess);
-    vec3 specular = u_lightColor * spec * u_Material.specular * u_Light.specular;
+    vec3 specular = u_Light.specular * (spec * vec3(texture2D(u_Material.specular, v_TextureCoords)));
 
     vec3 result = (ambient + diffuse + specular);
     gl_FragColor = vec4(result, 1.0);
