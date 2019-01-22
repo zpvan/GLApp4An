@@ -208,6 +208,7 @@
         </activity>
         -->
 
+
         <!--
         <activity android:name=".activity.LightTextureActivity">
             <intent-filter>
@@ -218,7 +219,17 @@
         </activity>
         -->
 
+        <!--
         <activity android:name=".activity.DirectLightActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+
+        <activity android:name=".activity.PointLightActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
